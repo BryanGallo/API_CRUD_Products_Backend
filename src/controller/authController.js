@@ -1,4 +1,5 @@
 import { check, validationResult } from "express-validator";
+import User from "../models/User.js";
 
 const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
@@ -17,11 +18,26 @@ const registerUser = async (req, res) => {
         .withMessage("La contraseña debe tener al menos 4 caracteres")
         .run(req);
     let result = validationResult(req);
-    console.log(result);
     if (!result.isEmpty()) {
         return res.status(200).json(result.array());
     }
-    return res.status(200).json({ msg: "Usuario Creado" });
+    try {
+        const existUser = await User.findOne({ where: { email } });
+        if (existUser) {
+            const error = new Error("El usuario ya esta registrado");
+            return res.status(400).json({ msg: error.message });
+        }
+        await User.create({
+            name,
+            email,
+            password,
+        });
+        return res.status(200).json({ msg: "Usuario Creado Correctamente" });
+    } catch (error) {
+        return res
+            .status(403)
+            .json({ msg: "Hubo un problema al crear el Usuario" });
+    }
 };
 const authenticate = async (req, res) => {
     const { email, password } = req.body;
