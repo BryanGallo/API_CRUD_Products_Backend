@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import db from "../config/db.js";
 
-const User = db.define("products", {
+const Product = db.define("products", {
     handle: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -51,4 +51,4 @@ const User = db.define("products", {
     },
 });
 
-export default User;
+export default Product;
