@@ -4,6 +4,9 @@ import userRouter from './routes/authRoutes.js'
 
 const app = express();
 
+//Solicitudes HTTP en JSON
+app.use(express.json());
+
 //Conexion BDD
 try {
     db.authenticate();
