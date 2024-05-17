@@ -15,6 +15,7 @@
   "author": "Bryan Gallo",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^4.19.2",
     "express-validator": "^7.0.1",
     "mysql2": "^3.9.7",
