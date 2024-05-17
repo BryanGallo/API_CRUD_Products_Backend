@@ -1,5 +1,6 @@
 import express from "express";
 import db from "./config/db.js";
+import userRouter from './routes/authRoutes.js'
 
 const app = express();
 
@@ -11,6 +12,10 @@ try {
 } catch (error) {
     console.log("error en la base");
 }
+
+//ROUTING
+//Routing User
+app.use("/api/auth", userRouter);
 
 const port = 8000;
 
