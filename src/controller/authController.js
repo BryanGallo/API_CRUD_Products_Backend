@@ -2,6 +2,7 @@ import { check, validationResult } from "express-validator";
 import User from "../models/User.js";
 import generateJWT from "../helpers/generateJWT.js";
 import generateId from "../helpers/generateId.js";
+import bcrypt from "bcryptjs";
 const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
     await check("name")
@@ -153,4 +154,52 @@ const confirmToken = async (req, res) => {
     }
 };
 
-export { registerUser, authenticate, forgetPassword, confirmToken };
+const newPassword = async (req, res) => {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    await check("token")
+        .isLength({ min: 4 })
+        .withMessage("El tamaño del token no es el correcto")
+        .run(req);
+
+    await check("password")
+        .notEmpty()
+        .withMessage("La contraseña no puede ir vacia")
+        .isLength({ min: 4 })
+        .withMessage("La contraseña debe tener mínimo 4 caracteres")
+        .run(req);
+    let result = validationResult(req);
+    console.log(result);
+    if (!result.isEmpty()) {
+        return res.status(200).json(result.array());
+    }
+
+    try {
+        const user = await User.findOne({ where: { token } });
+        if (!user) {
+            const error = new Error("El token no es valido");
+            return res.status(404).json({ msg: error.message });
+        }
+        //Hashear el nuevo password
+        user.password = await bcrypt.hash(password, 10);
+        user.token = "";
+        await user.save();
+
+        return res.status(200).json({
+            msg: "La contraseña fue actualizada con exito",
+        });
+    } catch (error) {
+        return res.status(403).json({
+            msg: "Hubo un problema al intentar actualizar su contraseña",
+        });
+    }
+};
+
+export {
+    registerUser,
+    authenticate,
+    forgetPassword,
+    confirmToken,
+    newPassword,
+};
