@@ -5,7 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/index.js "
+    "dev": "nodemon src/index.js ",
+    "db:import": "node ./src/seed/seeder.js -i",
+    "db:delete": "node ./src/seed/seeder.js -d"
   },
   "keywords": [
     "NodeJs",
