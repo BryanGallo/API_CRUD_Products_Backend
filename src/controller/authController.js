@@ -196,10 +196,22 @@ const newPassword = async (req, res) => {
     }
 };
 
+const profile = async (req, res) => {
+    const { user } = req;
+    try {
+        return res.status(200).json({ user });
+    } catch (error) {
+        return res.status(404).json({
+            msg: "El perfil no existe",
+        });
+    }
+};
+
 export {
     registerUser,
     authenticate,
     forgetPassword,
     confirmToken,
     newPassword,
+    profile,
 };
