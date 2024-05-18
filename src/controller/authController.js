@@ -56,7 +56,26 @@ const authenticate = async (req, res) => {
     if (!result.isEmpty()) {
         return res.status(200).json(result.array());
     }
-    return res.status(200).json({ msg: "Usuario Logeado" });
+    try {
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+            const error = new Error("El usuario no existe");
+            return res.status(400).json({ msg: error.message });
+        }
+        //TODO Aqui validar la contraseña
+        if (user) {
+            return res.status(200).json({
+                id:user.id,
+                name:user.name
+            })
+        }
+
+        return res.status(200).json({ msg: "Usuario Logeado" });
+    } catch (error) {
+        return res
+            .status(403)
+            .json({ msg: "Hubo un problema al ingresar el sistema" });
+    }
 };
 
 export { registerUser, authenticate };
