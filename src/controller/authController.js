@@ -124,4 +124,33 @@ const forgetPassword = async (req, res) => {
     }
 };
 
-export { registerUser, authenticate, forgetPassword };
+const confirmToken = async (req, res) => {
+    const { token } = req.params;
+
+    await check("token")
+        .isLength({ min: 4 })
+        .withMessage("El tamaño del token no es el correcto")
+        .run(req);
+    let result = validationResult(req);
+    console.log(result);
+    if (!result.isEmpty()) {
+        return res.status(200).json(result.array());
+    }
+
+    try {
+        const validToken = await User.findOne({ where: { token } });
+        if (!validToken) {
+            const error = new Error("El token caduco o no es el correcto");
+            return res.status(404).json({ msg: error.message });
+        }
+        return res.status(200).json({
+            msg: "Token Valido",
+        });
+    } catch (error) {
+        return res.status(403).json({
+            msg: "Hubo un problema al intentar leer el token",
+        });
+    }
+};
+
+export { registerUser, authenticate, forgetPassword, confirmToken };
