@@ -13,6 +13,7 @@ const registerUser = async (req, res) => {
     await check("email")
         .notEmpty()
         .withMessage("El correo no puede ir vacio")
+        .bail()
         .isEmail()
         .withMessage("Eso no parece un email")
         .run(req);
@@ -20,13 +21,14 @@ const registerUser = async (req, res) => {
     await check("password")
         .notEmpty()
         .withMessage("La contraseña no puede ir vacia")
+        .bail()
         .isLength({ min: 4 })
         .withMessage("La contraseña debe tener al menos 4 caracteres")
         .run(req);
 
     let result = validationResult(req);
     if (!result.isEmpty()) {
-        return res.status(200).json(result.array());
+        return res.status(400).json(result.array());
     }
     try {
         const existUser = await User.findOne({ where: { email } });
@@ -52,6 +54,7 @@ const authenticate = async (req, res) => {
     await check("email")
         .notEmpty()
         .withMessage("El correo no puede ir vacio")
+        .bail()
         .isEmail()
         .withMessage("Eso no parece un email")
         .run(req);
@@ -64,7 +67,7 @@ const authenticate = async (req, res) => {
     let result = validationResult(req);
     console.log(result);
     if (!result.isEmpty()) {
-        return res.status(200).json(result.array());
+        return res.status(400).json(result.array());
     }
     try {
         const user = await User.findOne({ where: { email } });
@@ -95,6 +98,7 @@ const forgetPassword = async (req, res) => {
     await check("email")
         .notEmpty()
         .withMessage("El correo no puede ir vacio")
+        .bail()
         .isEmail()
         .withMessage("Eso no parece un email")
         .run(req);
@@ -102,7 +106,7 @@ const forgetPassword = async (req, res) => {
     let result = validationResult(req);
     console.log(result);
     if (!result.isEmpty()) {
-        return res.status(200).json(result.array());
+        return res.status(400).json(result.array());
     }
 
     try {
@@ -135,7 +139,7 @@ const confirmToken = async (req, res) => {
     let result = validationResult(req);
     console.log(result);
     if (!result.isEmpty()) {
-        return res.status(200).json(result.array());
+        return res.status(400).json(result.array());
     }
 
     try {
@@ -166,13 +170,14 @@ const newPassword = async (req, res) => {
     await check("password")
         .notEmpty()
         .withMessage("La contraseña no puede ir vacia")
+        .bail()
         .isLength({ min: 4 })
         .withMessage("La contraseña debe tener mínimo 4 caracteres")
         .run(req);
     let result = validationResult(req);
     console.log(result);
     if (!result.isEmpty()) {
-        return res.status(200).json(result.array());
+        return res.status(400).json(result.array());
     }
 
     try {

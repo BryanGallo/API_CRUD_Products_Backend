@@ -73,6 +73,7 @@ const createProduct = async (req, res) => {
     await check("barcode")
         .notEmpty()
         .withMessage("El código de barras no puede estar vacío")
+        .bail()
         .isLength({ min: 8, max: 50 })
         .withMessage("El código de barras debe tener entre 8 y 50 caracteres")
         .run(req);
