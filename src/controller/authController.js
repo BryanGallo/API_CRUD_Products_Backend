@@ -1,7 +1,7 @@
 import { check, validationResult } from "express-validator";
 import User from "../models/User.js";
 import generateJWT from "../helpers/generateJWT.js";
-
+import generateId from "../helpers/generateId.js";
 const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
     await check("name")
@@ -88,4 +88,40 @@ const authenticate = async (req, res) => {
     }
 };
 
-export { registerUser, authenticate };
+const forgetPassword = async (req, res) => {
+    const { email } = req.body;
+
+    await check("email")
+        .notEmpty()
+        .withMessage("El correo no puede ir vacio")
+        .isEmail()
+        .withMessage("Eso no parece un email")
+        .run(req);
+
+    let result = validationResult(req);
+    console.log(result);
+    if (!result.isEmpty()) {
+        return res.status(200).json(result.array());
+    }
+
+    try {
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+            const error = new Error("El usuario no existe");
+            return res.status(404).json({ msg: error.message });
+        }
+        user.token = generateId();
+        await user.save();
+
+        return res.status(200).json({
+            msg: "Por favor accede al siguiente link para recuperar tu contraseña",
+            link: `http://localhost:8000/forget-password/${user.token}`,
+        });
+    } catch (error) {
+        return res.status(403).json({
+            msg: "Hubo un problema al intentar recuperar su contraseña",
+        });
+    }
+};
+
+export { registerUser, authenticate, forgetPassword };
