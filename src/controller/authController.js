@@ -1,6 +1,7 @@
 import { check, validationResult } from "express-validator";
 import User from "../models/User.js";
-import generateJWT from "../helpers/generateJWT.js"
+import generateJWT from "../helpers/generateJWT.js";
+
 const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
     await check("name")
@@ -9,14 +10,19 @@ const registerUser = async (req, res) => {
         .run(req);
 
     await check("email")
+        .notEmpty()
+        .withMessage("El correo no puede ir vacio")
         .isEmail()
         .withMessage("Eso no parece un email")
         .run(req);
 
     await check("password")
+        .notEmpty()
+        .withMessage("La contraseña no puede ir vacia")
         .isLength({ min: 4 })
         .withMessage("La contraseña debe tener al menos 4 caracteres")
         .run(req);
+
     let result = validationResult(req);
     if (!result.isEmpty()) {
         return res.status(200).json(result.array());
@@ -39,9 +45,12 @@ const registerUser = async (req, res) => {
             .json({ msg: "Hubo un problema al crear el Usuario" });
     }
 };
+
 const authenticate = async (req, res) => {
     const { email, password } = req.body;
     await check("email")
+        .notEmpty()
+        .withMessage("El correo no puede ir vacio")
         .isEmail()
         .withMessage("Eso no parece un email")
         .run(req);
@@ -66,7 +75,7 @@ const authenticate = async (req, res) => {
             return res.status(200).json({
                 id: user.id,
                 name: user.name,
-                token:generateJWT(user.id)
+                token: generateJWT(user.id),
             });
         } else {
             const error = new Error("Tu clave es Incorrecta");
