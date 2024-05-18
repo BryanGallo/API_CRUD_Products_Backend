@@ -47,7 +47,6 @@ const Product = db.define("products", {
         type: DataTypes.STRING,
         allowNull: false,
         require: true,
-        unique: true,
     },
 });
 
