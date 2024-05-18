@@ -1,6 +1,7 @@
 import express from "express";
 import db from "./config/db.js";
 import userRouter from './routes/authRoutes.js'
+import productRouter from "./routes/productRoute.js";
 
 const app = express();
 
@@ -19,6 +20,8 @@ try {
 //ROUTING
 //Routing User
 app.use("/api/auth", userRouter);
+//Routing Product
+app.use("/api/product", productRouter);
 
 const port = 8000;
 
