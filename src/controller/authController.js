@@ -62,15 +62,15 @@ const authenticate = async (req, res) => {
             const error = new Error("El usuario no existe");
             return res.status(400).json({ msg: error.message });
         }
-        //TODO Aqui validar la contraseña
-        if (user) {
+        if (await user.validatePassword(password)) {
             return res.status(200).json({
-                id:user.id,
-                name:user.name
-            })
+                id: user.id,
+                name: user.name,
+            });
+        } else {
+            const error = new Error("Tu clave es Incorrecta");
+            return res.status(403).json({ msg: error.message });
         }
-
-        return res.status(200).json({ msg: "Usuario Logeado" });
     } catch (error) {
         return res
             .status(403)
