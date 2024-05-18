@@ -1,6 +1,6 @@
 import { check, validationResult } from "express-validator";
 import User from "../models/User.js";
-
+import generateJWT from "../helpers/generateJWT.js"
 const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
     await check("name")
@@ -66,6 +66,7 @@ const authenticate = async (req, res) => {
             return res.status(200).json({
                 id: user.id,
                 name: user.name,
+                token:generateJWT(user.id)
             });
         } else {
             const error = new Error("Tu clave es Incorrecta");
