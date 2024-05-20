@@ -20,7 +20,6 @@ const listProducts = async (req, res) => {
 };
 
 const createProduct = async (req, res) => {
-    console.warn("aqui");
     const {
         handle,
         title,
@@ -83,7 +82,33 @@ const createProduct = async (req, res) => {
         return res.status(400).json(result.array());
     }
 
-    return res.status(200).json({ msg: "Hola" });
+    try {
+        const existProduct = await Product.findOne({
+            where: { sku },
+        });
+        console.log("aqui eso");
+        if (existProduct) {
+            const error = new Error("Ya existe un producto con ese 'sku'");
+            return res.status(400).json({ msg: error.message });
+        }
+        await Product.create({
+            handle,
+            title,
+            description,
+            sku,
+            grams,
+            stock,
+            price,
+            compare_price,
+            barcode,
+        });
+        return res.status(200).json({ msg: "Producto Creado Correctamente" });
+    } catch (error) {
+        console.log(error);
+        return res
+            .status(403)
+            .json({ msg: "Hubo un problema al crear el Producto" });
+    }
 };
 
 export { listProducts, createProduct };
