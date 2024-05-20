@@ -133,6 +133,7 @@ const editProduct = async (req, res) => {
         .run(req);
 
     await check("handle")
+        .optional()
         .notEmpty()
         .withMessage("Handle no puede ir vacio")
         .run(req);
