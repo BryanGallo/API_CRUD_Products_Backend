@@ -126,6 +126,7 @@ const editProduct = async (req, res) => {
         barcode,
     } = req.body;
 
+    //dato obligatorio
     await check("id")
         .isInt({ gt: 0 })
         .withMessage("El id debe ser un número")
@@ -137,38 +138,46 @@ const editProduct = async (req, res) => {
         .run(req);
 
     await check("title")
+        .optional()
         .notEmpty()
         .withMessage("Title no puede ir vacio")
         .run(req);
 
     await check("description")
+        .optional()
         .notEmpty()
         .withMessage("Description no puede ir vacio")
         .run(req);
 
+    //dato obligatorio
     await check("sku").notEmpty().withMessage("SKU no puede ir vacio").run(req);
 
     await check("grams")
+        .optional()
         .isFloat({ gt: 0 })
         .withMessage("Grams debe ser mayor a 0")
         .run(req);
 
     await check("stock")
+        .optional()
         .isInt({ gt: 0 })
         .withMessage("El stock debe ser mayor a 0")
         .run(req);
 
     await check("price")
+        .optional()
         .isFloat({ gt: 0 })
         .withMessage("El precio debe ser mayor a 0")
         .run(req);
 
     await check("compare_price")
+        .optional()
         .isFloat({ gt: 0 })
         .withMessage("El compare_price debe ser mayor a 0")
         .run(req);
 
     await check("barcode")
+        .optional()
         .notEmpty()
         .withMessage("El código de barras no puede estar vacío")
         .bail()
@@ -180,7 +189,54 @@ const editProduct = async (req, res) => {
     if (!result.isEmpty()) {
         return res.status(400).json(result.array());
     }
-    return res.status(200).json({ msg: "Llegue a" });
+
+    try {
+        const existProduct = await Product.findOne({
+            where: {
+                [Op.and]: [
+                    { id: { [Op.ne]: id } }, // No igual al ID especificado
+                    { sku },
+                ],
+            },
+        });
+        console.log(existProduct);
+        if (existProduct) {
+            const error = new Error("Ya existe un producto con ese 'sku'");
+            return res.status(400).json({ msg: error.message });
+        }
+
+        const product = await Product.findOne({
+            where: { id },
+        });
+
+        if (!product) {
+            const error = new Error(
+                "No encontramos al producto que deseas Editar"
+            );
+            return res.status(400).json({ msg: error.message });
+        }
+
+        product.handle = handle ?? product.handle,
+        product.title = title ?? product.title;
+        product.description = description ?? product.description;
+        product.sku = sku ?? product.sku;
+        product.grams = grams ?? product.grams;
+        product.stock = stock ?? product.stock;
+        product.price = price ?? product.price;
+        product.compare_price = compare_price ?? product.compare_price;
+        product.barcode = barcode ?? product.barcode;
+
+        await product.save();
+
+        return res.status(200).json({
+            msg: "Producto Actualizado Correctamente",
+        });
+    } catch (error) {
+        console.log(error);
+        return res
+            .status(403)
+            .json({ msg: "Hubo un problema al editar el Producto" });
+    }
 };
 
 export { listProducts, createProduct, editProduct };
