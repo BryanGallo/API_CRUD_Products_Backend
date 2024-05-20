@@ -129,7 +129,7 @@ const editProduct = async (req, res) => {
     //dato obligatorio
     await check("id")
         .isInt({ gt: 0 })
-        .withMessage("El id debe ser un número")
+        .withMessage("El id debe ser un número y mayor a 0")
         .run(req);
 
     await check("handle")
@@ -240,4 +240,44 @@ const editProduct = async (req, res) => {
     }
 };
 
-export { listProducts, createProduct, editProduct };
+const deleteProduct = async (req, res) => {
+    const { id } = req.params;
+
+    //dato obligatorio
+    await check("id")
+        .isInt({ gt: 0 })
+        .withMessage("El id debe ser un número y mayor a 0")
+        .run(req);
+
+    let result = validationResult(req);
+    if (!result.isEmpty()) {
+        return res.status(400).json(result.array());
+    }
+    try {
+        const product = await Product.findOne({
+            where: { id },
+        });
+
+        if (!product) {
+            const error = new Error(
+                "No encontramos al producto que deseas Eliminar"
+            );
+            return res.status(400).json({ msg: error.message });
+        }
+
+        await Product.destroy({
+            where: { id },
+        });
+
+        return res.status(200).json({
+            msg: "Producto Eliminado Correctamente",
+        });
+    } catch (error) {
+        console.log(error);
+        return res
+            .status(403)
+            .json({ msg: "Hubo un problema al Eliminar el Producto" });
+    }
+};
+
+export { listProducts, createProduct, editProduct, deleteProduct };
