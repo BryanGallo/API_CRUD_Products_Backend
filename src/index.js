@@ -1,6 +1,7 @@
 import express from "express";
 import db from "./config/db.js";
-import userRouter from './routes/authRoutes.js'
+import cors from "cors";
+import userRouter from "./routes/authRoutes.js";
 import productRouter from "./routes/productRoute.js";
 
 const app = express();
@@ -16,6 +17,13 @@ try {
 } catch (error) {
     console.log("error en la base");
 }
+
+//TODO: Colocar la direcion del front 
+app.use(
+    cors({
+        origin: "*",
+    })
+);
 
 //ROUTING
 //Routing User
