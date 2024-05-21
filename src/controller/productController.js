@@ -5,7 +5,7 @@ import { Op } from "sequelize";
 const listProducts = async (req, res) => {
     try {
         const products = await Product.findAll({
-            // order: [["Title", "ASC"]],
+            order: [["createdAt", "DESC"]],
         });
         console.log("lleuge");
         if (!products) {
@@ -217,8 +217,8 @@ const editProduct = async (req, res) => {
             return res.status(400).json({ msg: error.message });
         }
 
-        product.handle = handle ?? product.handle,
-        product.title = title ?? product.title;
+        (product.handle = handle ?? product.handle),
+            (product.title = title ?? product.title);
         product.description = description ?? product.description;
         product.sku = sku ?? product.sku;
         product.grams = grams ?? product.grams;
