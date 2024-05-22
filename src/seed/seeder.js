@@ -1,6 +1,8 @@
 import { exit } from "node:process";
 import Product from "../models/Product.js";
+import User from "../models/User.js";
 import { products } from "./products.js";
+import { user } from "./users.js";
 import db from "../config/db.js";
 const importData = async () => {
     try {
@@ -11,6 +13,7 @@ const importData = async () => {
 
         //Insertamos los datos,BulkCreate inserta todos los datos del arreglo
         await Product.bulkCreate(products);
+        await User.bulkCreate(user);
         console.log("Datos Importados correctamente");
 
         exit(0);

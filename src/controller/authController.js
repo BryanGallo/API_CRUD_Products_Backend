@@ -120,7 +120,7 @@ const forgetPassword = async (req, res) => {
 
         return res.status(200).json({
             msg: "Por favor accede al siguiente link para recuperar tu contraseña",
-            link: `http://localhost:8000/forget-password/${user.token}`,
+            link: `http://localhost:5173/forget-password/${user.token}`,
         });
     } catch (error) {
         return res.status(403).json({
