@@ -3,6 +3,8 @@ import db from "./config/db.js";
 import cors from "cors";
 import userRouter from "./routes/authRoutes.js";
 import productRouter from "./routes/productRoute.js";
+import dotenv from "dotenv";
+dotenv.config({ path: ".env" });
 
 const app = express();
 
@@ -31,7 +33,7 @@ app.use("/api/auth", userRouter);
 //Routing Product
 app.use("/api/product", productRouter);
 
-const port = 8000;
+const port = process.env.BD_PORT || 8000;
 
 app.listen(port, () => {
     console.log(`Servidor operativo en el puerto ${port}`);
